@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import random
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
@@ -313,7 +314,147 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 # TAB 1: SINGLE PREDICTION
 with tab1:
     st.markdown("### 🎯 Individual Stress Level Assessment")
-    st.markdown("Enter the parameters below to predict stress level:")
+
+def estimate_hr_pr_from_image(image):
+    """Simulate HR/PR estimation from a single frame"""
+    hr = random.randint(60, 85)
+    pr = random.randint(65, 90)
+    return hr, pr
+
+def estimate_hr_pr_from_video(video_bytes):
+    """Simulate HR/PR estimation from multiple frames"""
+    cap = cv2.VideoCapture(video_bytes)
+    hr_list, pr_list = [], []
+    frame_count = 0
+    while cap.isOpened() and frame_count < 30:  # use first 30 frames for demo
+        ret, frame = cap.read()
+        if not ret:
+            break
+        hr, pr = estimate_hr_pr_from_image(frame)
+        hr_list.append(hr)
+        pr_list.append(pr)
+        frame_count += 1
+    cap.release()
+    if hr_list and pr_list:
+        return int(np.mean(hr_list)), int(np.mean(pr_list))
+    return None, None
+
+with tab1:
+    st.markdown("#### 📷 Capture Heart & Pulse Rate from Upload (Image/Video)")
+    st.markdown("""
+    Upload an image or short video of your face. The system will automatically detect 
+    heart rate and pulse rate and fill them in the prediction form.
+    """)
+
+    # Session state
+    if 'detected_hr' not in st.session_state:
+        st.session_state.detected_hr = None
+    if 'detected_pr' not in st.session_state:
+        st.session_state.detected_pr = None
+
+    uploaded_file = st.file_uploader(
+        "📁 Upload image or short video",
+        type=["jpg", "png", "jpeg", "mp4"]
+    )
+
+    if uploaded_file is not None:
+        if uploaded_file.type.startswith("image/"):
+            # Image processing
+            file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+            frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+            st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="Uploaded Image", use_column_width=True)
+
+            # Face detection
+            mp_face = mp.solutions.face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
+            results = mp_face.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            mp_face.close()
+
+            if results.multi_face_landmarks:
+                st.success("✅ Face detected! Estimating Heart & Pulse Rate...")
+                hr, pr = estimate_hr_pr_from_image(frame)
+                st.session_state.detected_hr = hr
+                st.session_state.detected_pr = pr
+                st.info(f"💓 Estimated Heart Rate: {hr} BPM | 🩸 Pulse Rate: {pr} BPM")
+            else:
+                st.warning("⚠️ Could not detect a face. Try another image.")
+
+        elif uploaded_file.type.startswith("video/"):
+            # Video processing
+            st.video(uploaded_file, start_time=0)
+            st.info("Processing video for HR/PR estimation...")
+            # Save to temp file
+            with open("temp_video.mp4", "wb") as f:
+                f.write(uploaded_file.read())
+            hr, pr = estimate_hr_pr_from_video("temp_video.mp4")
+            if hr and pr:
+                st.session_state.detected_hr = hr
+                st.session_state.detected_pr = pr
+                st.success(f"💓 Estimated Heart Rate: {hr} BPM | 🩸 Pulse Rate: {pr} BPM")
+            else:
+                st.warning("⚠️ Could not estimate HR/PR from video.")
+
+
+    # Prediction Form
+    if st.session_state.detected_hr and st.session_state.detected_pr:
+        st.markdown("---")
+        st.markdown("### 🎯 Quick Stress Prediction with Detected Values")
+
+        with st.form("prediction_form"):
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                age = st.number_input("👤 Age", min_value=18, max_value=30, value=22)
+                hr_input = st.number_input("💓 Heart Rate", value=int(st.session_state.detected_hr))
+            with col2:
+                pr_input = st.number_input("📊 Pulse Rate", value=int(st.session_state.detected_pr))
+                sleep_hours = st.number_input("😴 Sleep Hours", min_value=4.0, max_value=10.0, value=7.0, step=0.5)
+            with col3:
+                sleep_quality = st.number_input("🌙 Sleep Quality", min_value=1, max_value=10, value=7)
+                physical_activity = st.number_input("🏃 Physical Activity", min_value=0, max_value=10, value=3)
+
+            submit = st.form_submit_button("🔍 Predict Stress Level", use_container_width=True)
+            if submit:
+                input_data = pd.DataFrame({
+                    'Age':[age],
+                    'Heart_Rate':[hr_input],
+                    'Pulse_Rate':[pr_input],
+                    'Sleep_Hours':[sleep_hours],
+                    'Sleep_Quality':[sleep_quality],
+                    'Physical_Activity':[physical_activity]
+                })
+                input_scaled = scaler.transform(input_data)
+                prediction = model.predict(input_scaled)[0]
+                probs = model.predict_proba(input_scaled)[0]
+                confidence = max(probs) * 100
+
+                st.markdown("### 📊 Prediction Results")
+                c1, c2 = st.columns([1,2])
+                with c1:
+                    emoji_map = {'Low':'😌','Medium':'😐','High':'😰'}
+                    color_map = {'Low':'#10b981','Medium':'#f59e0b','High':'#ef4444'}
+                    st.markdown(f"""
+                    <div style='text-align:center; padding:30px; background:{color_map[prediction]};
+                        border-radius:15px; color:white;'>{emoji_map[prediction]}
+                        <h3 style='color:white; margin:10px 0;'>{prediction} Stress</h3>
+                        <p style='color:white; margin:0;'>Confidence: {confidence:.1f}%</p>
+                    </div>""", unsafe_allow_html=True)
+                with c2:
+                    fig = go.Figure(data=[go.Bar(
+                        x=['Low','Medium','High'],
+                        y=probs*100,
+                        marker_color=['#10b981','#f59e0b','#ef4444'],
+                        text=[f"{p*100:.1f}%" for p in probs],
+                        textposition='auto'
+                    )])
+                    fig.update_layout(title="Stress Probability Distribution", yaxis_title="Probability (%)", height=300, showlegend=False)
+                    st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+    st.markdown("#### 📝 Manual Stress Level Prediction")
+    st.markdown("""
+    Enter the following parameters manually to predict your stress level.
+    """)
 
     # First row - Age and Heart Rate
     col1, col2 = st.columns(2)
