@@ -1,0 +1,9 @@
+STRESS LEVEL PREDICTION - MODEL INFORMATION
+============================================================
+
+Best Model: RandomForest
+Timestamp: 2025-11-09 11:08:37
+Accuracy: 100.00%
+F1-Score: 1.0000
+Features: ['Age', 'Heart_Rate', 'Pulse_Rate', 'Sleep_Hours', 'Sleep_Quality', 'Physical_Activity']
+Random Seed: 42

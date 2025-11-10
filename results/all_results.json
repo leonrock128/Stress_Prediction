@@ -1,0 +1,118 @@
+{
+    "RandomForest": {
+        "accuracy": 1.0,
+        "train_accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 1.0,
+        "cv_std": 0.0,
+        "training_time": 0.5409269332885742,
+        "params": {
+            "n_estimators": 150,
+            "max_depth": 20,
+            "min_samples_split": 3,
+            "min_samples_leaf": 1,
+            "random_state": 42,
+            "class_weight": "balanced",
+            "n_jobs": -1
+        }
+    },
+    "GradientBoosting": {
+        "accuracy": 0.99,
+        "train_accuracy": 1.0,
+        "precision": 0.9900704225352112,
+        "recall": 0.99,
+        "f1_score": 0.9899967220930925,
+        "cv_mean": 0.99375,
+        "cv_std": 0.005590169943749454,
+        "training_time": 0.9029998779296875,
+        "params": {
+            "n_estimators": 100,
+            "learning_rate": 0.1,
+            "max_depth": 5,
+            "random_state": 42
+        }
+    },
+    "SVM_RBF": {
+        "accuracy": 1.0,
+        "train_accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 1.0,
+        "cv_std": 0.0,
+        "training_time": 0.024143457412719727,
+        "params": {
+            "kernel": "rbf",
+            "C": 10,
+            "gamma": "scale",
+            "probability": true,
+            "random_state": 42,
+            "class_weight": "balanced"
+        }
+    },
+    "SVM_Linear": {
+        "accuracy": 1.0,
+        "train_accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 1.0,
+        "cv_std": 0.0,
+        "training_time": 0.016896963119506836,
+        "params": {
+            "kernel": "linear",
+            "C": 1.0,
+            "probability": true,
+            "random_state": 42,
+            "class_weight": "balanced"
+        }
+    },
+    "DecisionTree": {
+        "accuracy": 1.0,
+        "train_accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 0.9949999999999999,
+        "cv_std": 0.006123724356957924,
+        "training_time": 0.012068033218383789,
+        "params": {
+            "max_depth": 20,
+            "min_samples_split": 3,
+            "random_state": 42,
+            "class_weight": "balanced"
+        }
+    },
+    "KNN": {
+        "accuracy": 1.0,
+        "train_accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 0.99875,
+        "cv_std": 0.0024999999999999914,
+        "training_time": 0.0051915645599365234,
+        "params": {
+            "n_neighbors": 5,
+            "weights": "distance",
+            "n_jobs": -1
+        }
+    },
+    "LogisticRegression": {
+        "accuracy": 1.0,
+        "train_accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "cv_mean": 1.0,
+        "cv_std": 0.0,
+        "training_time": 0.06016802787780762,
+        "params": {
+            "max_iter": 1000,
+            "random_state": 42,
+            "class_weight": "balanced"
+        }
+    }
+}
