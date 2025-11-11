@@ -19,8 +19,6 @@ plotly==5.17.0
 # Computer Vision & Face Detection (REQUIRED for Camera Detection)
 # Use opencv-python-headless for cloud deployment (Streamlit Cloud)
 opencv-python-headless==4.8.1.78
-# For local development with GUI preview, use this instead:
-# opencv-python==4.8.1.78
 
 # Face Detection & Mesh (REQUIRED for rPPG heart rate detection)
 mediapipe==0.10.8
