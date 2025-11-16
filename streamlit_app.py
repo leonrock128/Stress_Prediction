@@ -342,10 +342,12 @@ st.markdown("""
 .stTabs [data-baseweb="tab-list"] {
     gap: 18px;                    
     background: transparent;
-    justify-content: center;      
+    justify-content: flex-start !important;
     padding: 25px 0;
-    flex-wrap: nowrap;            
-    overflow-x: hidden;       
+    flex-wrap: nowrap !important;     
+    overflow-x: auto !important;  
+    scroll-behavior: smooth !important;
+    scrollbar-width: none;
 }
 
 /* --- Each tab --- */
@@ -392,6 +394,45 @@ st.markdown("""
     line-height: 1.2;
     display: block;
     margin-bottom: 10px;
+}
+            
+@media (max-width: 768px) {
+
+    .stTabs [data-baseweb="tab"] {
+        min-width: 130px !important;   /* smaller tab width */
+        padding: 12px 18px !important; /* smaller padding */
+        font-size: 14px !important;    /* smaller text */
+        border-radius: 10px !important;
+    }
+
+    .stTabs [data-baseweb="tab"]::before {
+        font-size: 16px !important;    /* smaller icon */
+        margin-right: 6px !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px !important;          /* tighter spacing */
+        padding: 15px 0 !important;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .stTabs [data-baseweb="tab"] {
+        min-width: 110px !important;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+    }
+
+    .stTabs [data-baseweb="tab"]::before {
+        font-size: 14px !important;
+        margin-right: 5px !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 6px !important;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -583,29 +624,84 @@ with tab1:
     Enter the following parameters manually to predict your stress level.
     """)
 
+    st.markdown("""
+        <style>
+
+        /* Desktop */
+        .resp-label {
+            font-size: 25px;
+            font-weight: 600;
+            color: #1e3a8a;
+            display: inline-flex;
+            align-items: center;    
+        }
+
+        /* Icon inside label */
+        .resp-label i {
+            font-size: 20px;
+            margin-right: 10px;
+            color: inherit;
+        }
+
+        /* Tablet */
+        @media (max-width: 900px) {
+            .resp-label {
+                font-size: 20px !important;
+            }
+            .resp-label i {
+                font-size: 18px !important;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .resp-label {
+                font-size: 17px !important;
+            }
+            .resp-label i {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Small iPhones / small Android */
+        @media (max-width: 420px) {
+            .resp-label {
+                font-size: 15px !important;
+            }
+            .resp-label i {
+                font-size: 14px !important;
+                margin-right: 6px !important;
+            }
+        }
+
+        </style>
+        """, unsafe_allow_html=True)
+
+
+
     # First row - Age and Heart Rate
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("""
-        <span style='font-size:25px; font-weight:600;'>
-            <i class='fa-solid fa-user' style='font-size:20px; margin-right:10px;'></i> Age (years)
+        <span class='resp-label'>
+            <i class='fa-solid fa-user'></i> Age (years)
         </span>""", unsafe_allow_html=True)
         age = st.slider(
             "",
-            min_value=18, max_value=30, value=22,
+            min_value=12, max_value=30, value=22,
             help="Student age in years",
             key="age2"
         )
 
     with col2:
         st.markdown("""
-        <span style='font-size:25px; font-weight:600;'>
-            <i class='fa-solid fa-heart' style='font-size:20px; margin-right:10px;'></i> Heart Rate (bpm)
+        <span class='resp-label'>
+            <i class='fa-solid fa-heart'></i> Heart Rate (bpm)
         </span>""", unsafe_allow_html=True)
         heart_rate = st.slider(
             "",
-            min_value=60, max_value=100, value=75,
+            min_value=40, max_value=180, value=75,
             help="Resting heart rate in beats per minute",
             key="hr2"
         )
@@ -615,20 +711,20 @@ with tab1:
 
     with col3:
         st.markdown("""
-        <span style='font-size:25px; font-weight:600;'>
-            <i class='fa-solid fa-chart-column' style='font-size:20px; margin-right:10px;'></i> Pulse Rate (bpm)
+        <span class='resp-label'>
+            <i class='fa-solid fa-chart-column'></i> Pulse Rate (bpm)
         </span>""", unsafe_allow_html=True)
         pulse_rate = st.slider(
             "",
-            min_value=60, max_value=100, value=75,
+            min_value=40, max_value=180, value=75,
             help="Pulse rate in beats per minute",
             key="pr2"
         )
 
     with col4:
         st.markdown("""
-        <span style='font-size:25px; font-weight:600;'>
-            <i class='fa-solid fa-moon' style='font-size:20px; margin-right:10px;'></i> Sleep Quality (1-10)
+        <span class='resp-label'>
+            <i class='fa-solid fa-moon'></i> Sleep Quality (1-10)
         </span>""", unsafe_allow_html=True)
         sleep_quality = st.slider(
             "",
@@ -642,8 +738,8 @@ with tab1:
 
     with col5:
         st.markdown("""
-        <span style='font-size:25px; font-weight:600;'>
-            <i class='fa-solid fa-bed' style='font-size:20px; margin-right:10px;'></i> Sleep Hours
+        <span class='resp-label'>
+            <i class='fa-solid fa-bed'></i> Sleep Hours
         </span>""", unsafe_allow_html=True)
         sleep_hours = st.slider(
             "",
@@ -654,8 +750,8 @@ with tab1:
 
     with col6:
         st.markdown("""
-        <span style='font-size:25px; font-weight:600;'>
-            <i class='fa-solid fa-person-running' style='font-size:20px; margin-right:10px;'></i> Physical Activity (hrs/week)
+        <span class='resp-label'>
+            <i class='fa-solid fa-person-running'></i> Physical Activity (hrs/week)
         </span>""", unsafe_allow_html=True)
         physical_activity = st.slider(
             "",
